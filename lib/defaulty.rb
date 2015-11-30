@@ -26,6 +26,7 @@ class Defaulty
     def initialize(h)
       raise "Domain needs to be initialized with a hash containing one key, the domain name" unless h.size == 1
 
+      puts h.inspect
       @name, data = h.first
       properties = data.delete('keys').map { |key, data| Property.new(key, data) } 
       @properties = Hash[ properties.map { |property| [property.name, property] } ]
@@ -53,8 +54,6 @@ class Defaulty
         raise "Don't know what to do with url '#{url}'"
       end
     end 
-
-    pp defs
 
     Defaulty.new(defs)
   end
@@ -94,7 +93,7 @@ class Defaulty
   private
 
   def self.github_index_url?(url)
-    url =~ %r(/https://api.github.com/repos/.*/contents/)
+    url =~ %r(^https://api.github.com/repos/.*/contents/?$)
   end
 
   def self.yml_url?(url)
@@ -102,13 +101,15 @@ class Defaulty
   end
 
   def self.load_ymls_from_github(contents_url)
-    contents = JSON.parse(open(url))
-    yml_urls = files.select { |f| yml_url?(f['name']) }
-    yml_urls.map { |yml_url| load_yml(yml_url) }
+    contents = JSON.parse(open(contents_url).read)
+    ymls = contents.select { |f| yml_url?(f['name']) }
+    ymls.map { |yml| load_yml(yml['download_url']) }
   end
 
   def self.load_yml(url)
-    YAML.load(open(url))
+    puts "URL"
+    puts url
+    YAML.load(open(url).read)
   end
 
   def initialize(defs)
