@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'defaulty'
+require 'stringio_equals'
+
+require 'hashdiff'
+require 'pp'
+
+def diff
+  puts "Capturing all defaults..."
+  before = Defaulty::all_defaults
+  puts "Done."
+
+  puts "Make a change somewhere and then come back here and press <ENTER>"
+  STDIN.getc
+
+  puts "Capturing all defaults again..."
+  after = Defaulty::all_defaults
+  puts "Done."
+  
+  diffs = HashDiff.diff(before, after)
+end
+
+
+differences = diff
+
+pp differences
+puts "Number of diffs: #{differences.size}"
+

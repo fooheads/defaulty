@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'defaulty'
+require 'stringio_equals'
+
+require 'hashdiff'
+require 'pp'
+
+def defaults(domain)
+  defaults = Defaulty::defaults(domain)
+  pp defaults
+end
+
+defaults(ARGV[0])
+
+
