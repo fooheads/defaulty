@@ -3,7 +3,6 @@ require 'plist'
 require 'open-uri'
 require 'json'
 require 'yaml'
-require 'dp'
 
 require 'open-uri'
 require 'uri'
