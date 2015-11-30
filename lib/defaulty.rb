@@ -3,7 +3,6 @@ require 'plist'
 require 'open-uri'
 require 'json'
 require 'yaml'
-require 'dp'
 
 require 'open-uri'
 require 'uri'
@@ -114,7 +113,6 @@ class Defaulty
   end
 
   def initialize(defs)
-    d.p 'defs'
     domains = defs.map { |d| Domain.new(d) }
     @domains = Hash[ domains.map { |domain| [domain.name, domain] } ]
   end
