@@ -3,6 +3,7 @@ require 'plist'
 require 'open-uri'
 require 'json'
 require 'yaml'
+require 'dp'
 
 require 'open-uri'
 require 'uri'
@@ -55,7 +56,7 @@ class Defaulty
       end
     end 
 
-    Defaulty.new(defs)
+    Defaulty.new(defs.flatten)
   end
 
 
@@ -102,8 +103,8 @@ class Defaulty
 
   def self.load_ymls_from_github(contents_url)
     contents = JSON.parse(open(contents_url).read)
-    ymls = contents.select { |f| yml_url?(f['name']) }
-    ymls.map { |yml| load_yml(yml['download_url']) }
+    yml_contents = contents.select { |f| yml_url?(f['name']) }
+    yml_contents.map { |yml| load_yml(yml['download_url']) }
   end
 
   def self.load_yml(url)
@@ -113,6 +114,7 @@ class Defaulty
   end
 
   def initialize(defs)
+    d.p 'defs'
     domains = defs.map { |d| Domain.new(d) }
     @domains = Hash[ domains.map { |domain| [domain.name, domain] } ]
   end
