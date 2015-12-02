@@ -26,7 +26,6 @@ class Defaulty
     def initialize(h)
       raise "Domain needs to be initialized with a hash containing one key, the domain name" unless h.size == 1
 
-      puts h.inspect
       @name, data = h.first
       properties = data.delete('keys').map { |key, data| Property.new(key, data) } 
       @properties = Hash[ properties.map { |property| [property.name, property] } ]
@@ -46,12 +45,10 @@ class Defaulty
 
   def self.load(*urls)
     defs = urls.map do |url|
-      if yml_url?(url)
-        load_yml(url)
-      elsif github_index_url?(url)
+      if github_index_url?(url)
         load_ymls_from_github(url)
       else
-        raise "Don't know what to do with url '#{url}'"
+        load_ymls_from_path(url)
       end
     end 
 
@@ -70,8 +67,6 @@ class Defaulty
   def self.all_defaults
     all_domains = domains + ['NSGlobalDomain']
     selected_domains = all_domains
-    # selected_domains = all_domains.select { |domain| domain.include? "com.apple.ncplugin.weather" }
-    # pp selected_domains
     pairs = selected_domains.map do |domain|
       [domain, defaults(domain)]
     end
@@ -80,6 +75,7 @@ class Defaulty
 
   def write(app, options)
     domain = @domains[app]
+    raise "Can't find domain for '#{app}'" unless domain
     options.each do |key, value|
       key = key.to_s
       property = domain.properties[key]
@@ -106,9 +102,12 @@ class Defaulty
     yml_contents.map { |yml| load_yml(yml['download_url']) }
   end
 
+  def self.load_ymls_from_path(contents_url)
+    yml_files = Dir.glob("#{contents_url}/**/*.yml")
+    yml_files.map { |yml_file| load_yml(yml_file) }
+  end
+
   def self.load_yml(url)
-    puts "URL"
-    puts url
     YAML.load(open(url).read)
   end
 
