@@ -62,6 +62,9 @@ class Defaulty
 
   def self.defaults(domain)
     Plist::parse_xml `defaults export #{domain} -`
+  rescue 
+    puts "failed to parse #{domain}"
+    []
   end
 
   def self.all_defaults
