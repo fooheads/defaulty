@@ -100,9 +100,17 @@ class Defaulty
   end
 
   def self.load_ymls_from_github(contents_url)
-    contents = JSON.parse(open(contents_url).read)
-    yml_contents = contents.select { |f| yml_url?(f['name']) }
-    yml_contents.map { |yml| load_yml(yml['download_url']) }
+    begin
+      contents = JSON.parse(open(contents_url, :http_basic_authentication=>[ENV['GITHUB_USERNAME'], ENV['BOXY_GITHUB_API_TOKEN']]).read)
+      yml_contents = contents.select { |f| yml_url?(f['name']) }
+      yml_contents.map { |yml| load_yml(yml['download_url']) }
+    rescue => e
+      puts "Problem loading content from github: #{contents_url}"
+      puts e.inspect
+      puts e.io.read
+      puts "Exiting..."
+      exit
+    end
   end
 
   def self.load_ymls_from_path(contents_url)
